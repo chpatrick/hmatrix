@@ -26,11 +26,6 @@ extra-source-files: THANKS.md CHANGELOG
 
 extra-source-files: src/Internal/C/lapack-aux.h
 
-flag openblas
-    description:    Link with OpenBLAS (https://github.com/xianyi/OpenBLAS) optimized libraries.
-    default:        False
-    manual: True
-
 library
 
     Build-Depends:      base >= 4.8 && < 5,
@@ -85,55 +80,17 @@ library
                         -fno-warn-orphans
                         -fprof-auto
 
-    cc-options:         -O4 -Wall
+    cc-options:         -O4 -Wall -fopenmp
 
     if arch(x86_64)
         cc-options:     -msse2
     if arch(i386)
         cc-options:     -msse2
 
+    extra-libraries: mkl_rt
 
-    if os(OSX)
-        if flag(openblas)
-            extra-lib-dirs:     /opt/local/lib/openblas/lib
-            extra-libraries:    openblas
-        else
-            extra-libraries:    blas lapack
-
-        extra-lib-dirs: /opt/local/lib/
-        include-dirs: /opt/local/include/
-        extra-lib-dirs: /usr/local/lib/
-        include-dirs: /usr/local/include/
-        if arch(i386)
-            cc-options: -arch i386
-        frameworks: Accelerate
-
-    if os(freebsd)
-        if flag(openblas)
-            extra-lib-dirs:     /usr/local/lib/openblas/lib
-            extra-libraries:    openblas
-        else
-            extra-libraries:    blas lapack
-
-       extra-lib-dirs: /usr/local/lib
-       include-dirs: /usr/local/include
-       extra-libraries: gfortran
-
-    if os(windows)
-        if flag(openblas)
-            extra-libraries:    libopenblas, libgcc_s_seh-1, libgfortran-3, libquadmath-0
-        else
-            extra-libraries:    blas lapack
-
-    if os(linux)
-        if flag(openblas)
-            extra-lib-dirs:     /usr/lib/openblas/lib
-            extra-libraries:    openblas
-        else
-            extra-libraries:    blas lapack
-
-        if arch(x86_64)
-            cc-options: -fPIC
+    if arch(x86_64)
+        cc-options: -fPIC
 
 
 source-repository head
